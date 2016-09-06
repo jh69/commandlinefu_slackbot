@@ -48,7 +48,8 @@ def gettime():
 
 def parseclfujson(textdata, searchstr):
     postscounter = 0  # number of items we've added to the buffer string
-    output = "<http://www.commandlinefu.com|*CommandlineFu*> results for **:\n"
+    output = "<%s|*CommandlineFu*> results for *%s*:\n" % (
+        "http://www.commandlinefu.com", searchstr)
 
     try:
         js = json.loads(textdata)
@@ -117,11 +118,18 @@ def parse_slack_output(slack_rtm_output):
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
-            otext = output["text"]
-            if output and 'text' in output and otext.startswith(clfutrigger):
-                tmp_output = otext.strip().lower()
-                clfulen = len(clfutrigger)
-                return tmp_output[clfulen+1:clfulen], output["channel"]
+            if 'text' not in output:
+                continue
+            if output["text"].startswith(clfutrigger) is False:
+                continue
+
+            tmp_output = str(output["text"].strip().lower())
+            olen = len(tmp_output)
+            clfulen = len(clfutrigger)
+
+            print("%s" % tmp_output[clfulen+1:olen])
+
+            return tmp_output[clfulen+1:olen], output["channel"]
     return None, None
 
 
