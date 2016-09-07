@@ -5,6 +5,7 @@ import sys
 
 from slackbot import core
 
+
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "", ["websocket-delay="])
