@@ -6,7 +6,7 @@ import base64
 import urllib
 from slackclient import SlackClient
 
-# =========== User Configurable Stuff ===========
+# =========== User Configurable Stuff ============
 
 mybottoken = "[Paste API token here]"
 clfutrigger = "clfu"  # trigger word that precedes a search
@@ -14,8 +14,6 @@ maxresults = 5  # maximum number of results to return on a search
 worstpossiblerating = 0  # worst possible upvote count of results to return
 
 # ===============================================
-
-READ_WEBSOCKET_DELAY = 1
 
 if "[Paste" not in mybottoken:  # if user has inserted their bot token...
     apitoken = mybottoken
@@ -37,13 +35,12 @@ slack_client = SlackClient(apitoken)
 def msgenc(string):
     # these 3 characters must be replaced for posting messages on slack
     return (
-        string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-    )
+        string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'))
 
 
 def gettime():
-    time_str = str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime()))
-    return "[" + time_str + "]"
+    return "[%s]" % (
+        str(time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())))
 
 
 def parseclfujson(textdata, searchstr):
@@ -53,8 +50,9 @@ def parseclfujson(textdata, searchstr):
 
     try:
         js = json.loads(textdata)
-    except:
+    except ValueError:
         return "There was a problem parsing the json returned from the server."
+
     if len(js) < 1:
         return "No results. Try again using different search terms."
 
@@ -69,14 +67,13 @@ def parseclfujson(textdata, searchstr):
     # which should effectively return best search results at the top
     while qual > 0:
         for i in js:
-            if int(i['votes']) == qual:
-                url = i["url"]
-                summary = i["summary"]
-                cmd = i["command"]
-                votes = i["votes"]
+            if int(i["votes"]) == qual:
+                output += "<%s|%s> _(Upvotes: %s)_\n```%s```\n\n" % (
+                    i["url"],
+                    i["summary"],
+                    i["command"],
+                    i["votes"])
 
-                output += "<" + url + "|" + summary + ">"
-                output += " _(Upvotes: " + votes + ")_\n```" + cmd + "```\n\n"
                 postscounter += 1
 
                 # got our max, we're good
@@ -136,7 +133,7 @@ def parse_slack_output(slack_rtm_output):
 
 
 # main function
-def start():
+def start(websocket_delay=1):
     if slack_client.rtm_connect():
         print(gettime() + " Bot successfully connected to slack, fool.")
 
@@ -145,6 +142,6 @@ def start():
             if command and channel:
                 handle_command(command, channel)
 
-            time.sleep(READ_WEBSOCKET_DELAY)
+            time.sleep(websocket_delay)
     else:
         print("Connection failed. Invalid Slack token?")
