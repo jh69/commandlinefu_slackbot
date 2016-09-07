@@ -115,6 +115,8 @@ def handle_command(command, channel):
 
 
 def parse_slack_output(slack_rtm_output):
+    print(slack_rtm_output)
+
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
