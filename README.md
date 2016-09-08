@@ -15,6 +15,10 @@ The slackbot requires a valid slack API token. [This can be accomplished here.](
 You can supply this token either by directly editing `slackbot/core.py`, 
 or by setting the environment variable: `CLFU_SLACKBOT_TOKEN` (this is recommended).
 
+### Running the bot
+
+All you need to do to run the bot is execute `run.py` from the server of your choice.
+
 ### Interacting with the thing
 Once the script says it's successfully connected to Slack, check the user list to see if the 
 bot is online. If so, invite it to whichever channels you want the bot to work in. Or 
